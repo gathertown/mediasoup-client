@@ -284,32 +284,13 @@ export class RemoteSdp
 
 	closeMediaSection(mid: string): void
 	{
-		const idx = this._midToIndex.get(mid);
+		logger.debug(
+			'closeMediaSection() | cannot close first media section, disabling it instead [mid:%s]',
+			mid);
 
-		if (idx === undefined)
-		{
-			throw new Error(`no media section found with mid '${mid}'`);
-		}
+		this.disableMediaSection(mid);
 
-		const mediaSection = this._mediaSections[idx];
-
-		// NOTE: Closing the first m section is a pain since it invalidates the
-		// bundled transport, so let's avoid it.
-		if (mid === this._firstMid)
-		{
-			logger.debug(
-				'closeMediaSection() | cannot close first media section, disabling it instead [mid:%s]',
-				mid);
-
-			this.disableMediaSection(mid);
-
-			return;
-		}
-
-		mediaSection.close();
-
-		// Regenerate BUNDLE mids.
-		this._regenerateBundleMids();
+		return;
 	}
 
 	planBStopReceiving(
